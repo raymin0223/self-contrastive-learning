@@ -1,4 +1,4 @@
-# Self-Contrastive Learning: An Efficient Supervised Contrastive Framework with Single-view and Sub-network
+# Self-Contrastive Learning: Single-viewed Supervised Contrastive Framework using Sub-network
 
 <p align="center">
   <img src=https://user-images.githubusercontent.com/50742281/203948327-155ece9a-3ce1-4997-af9b-bbf6a535f6ec.png width="500">
@@ -6,11 +6,21 @@
 
 This repository contains the official PyTorch implementation of the following paper: 
 
-> **Self-Contrastive Learning: An Efficient Supervised Contrastive Framework with Single-view and Sub-network**
-> Sangmin Bae*, Sungnyun Kim*, Jongwoo Ko, Gihun Lee, Seungjong Noh, Se-Young Yun (KAIST AI, SK Hynix)
-> https://arxiv.org/abs/2106.15499
+> **Self-Contrastive Learning: Single-viewed Supervised Contrastive Framework using Sub-network** by
+> Sangmin Bae*, Sungnyun Kim*, Jongwoo Ko, Gihun Lee, Seungjong Noh, Se-Young Yun, [AAAI 2023](https://aaai.org/Conferences/AAAI-23/).
+> 
+> **Paper**: https://arxiv.org/abs/2106.15499
 >
-> **Abstract:** *This paper proposes an efficient supervised contrastive learning framework, called Self-Contrastive (SelfCon) learning, that self-contrasts within multiple outputs from the different levels of a multi-exit network. SelfCon learning with a single-view does not require additional augmented samples, which resolves the concerns of multi-viewed batch (e.g., high computational cost and generalization error). Unlike the previous works based on the mutual information (MI) between the multi-views in unsupervised learning, we prove the MI bound for SelfCon loss in a supervised and single-viewed framework. We also empirically analyze that the success of SelfCon learning is related to the regularization effect from the single-view and sub-network. For ImageNet, SelfCon with a single-viewed batch improves accuracy by +0.3% with 67% memory and 45% time of Supervised Contrastive (SupCon) learning, and a simple ensemble of multi-exit outputs boost performance up to +1.4%.*
+> **Abstract:** *Contrastive loss has significantly improved performance in supervised classification tasks by using a multi-viewed framework that leverages augmentation and label information. The augmentation enables contrast with another view of a single image but enlarges training time and memory usage. To exploit the strength of multi-views while avoiding the high computation cost, we introduce a multi-exit architecture that outputs multiple features of a single image in a single-viewed framework. To this end, we propose Self-Contrastive (SelfCon) learning, which self-contrasts within multiple outputs from the different levels of a single network. The multi-exit architecture efficiently replaces multi-augmented images and leverages various information from different layers of a network. We demonstrate that SelfCon learning improves the classification performance of the encoder network, and empirically analyze its advantages in terms of the single-view and the sub-network. Furthermore, we provide theoretical evidence of the performance increase based on the mutual information bound. For ImageNet classification on ResNet-50, SelfCon improves accuracy by +0.6% with 59% memory and 48% time of Supervised Contrastive learning, and a simple ensemble of multi-exit outputs boosts performance up to +1.5%.*
+
+## Table of Contents
+
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Parameters for Pretraining](#parameters-for-pretraining)
+  * [Experimental Results](#experimental-results)
+* [License](#license)
+* [Contact](#contact)
 
 ## Installation
 We experimented with eight RTX 3090 GPUs and CUDA version of 11.3.   
@@ -22,11 +32,10 @@ $ pip install -r requirements.txt
 ```
 
 ## Usage
-For SelfCon linear evaluation, the following commands are examples of running the code.     
-Refer to `scripts/` for SupCon pretraining and 1-stage training examples.
+To pretrain the SelfCon model, the following command is an example of running `main_represent.py`.     
 
 ```bash
-# Pretraining on [Dataset: CIFAR-100, Model: ResNet-18]
+# Pretraining on [Dataset: CIFAR-100, Architecture: ResNet-18]
 python main_represent.py --exp_name "resnet_fc_[False,True,False]" \
     --seed 2022 \
     --method SelfCon \
@@ -43,8 +52,11 @@ python main_represent.py --exp_name "resnet_fc_[False,True,False]" \
     --precision
 ```
 
+For linear evaluation, run `main_linear.py` with an appropriate `${SAVE_CKPT}`.   
+For the above example, `${SAVE_CKPT}` is `./save/representation/SelfCon/cifar100_models/SelfCon_cifar100_resnet18_lr_0.5_multiview_False_label_True_decay_0.0001_bsz_1024_temp_0.1_seed_2022_cosine_warm_resnet_fc_[False,True,False]/last.pth`.
+
 ```bash
-# Finetuning on [Dataset: CIFAR-10, Model: ResNet-18]
+# Finetuning on [Dataset: CIFAR-100, Architecture: ResNet-18]
 python main_linear.py --batch_size 512 \
     --dataset cifar100 \
     --model resnet18 \
@@ -57,28 +69,32 @@ python main_linear.py --batch_size 512 \
     --lr_decay_epochs '60,80' \
     --lr_decay_rate 0.1 \
     --subnet \
-    --ckpt ./save/representation/SelfCon/cifar100_models/SelfCon_cifar100_resnet18_lr_0.5_multiview_False_label_True_decay_0.0001_bsz_1024_temp_0.1_seed_2022_cosine_warm_resnet_fc_[False,True,False]/last.pth
+    --ckpt ${SAVE_CKPT}
 ```
 
-### Parameters for pretraining
+Also, refer to `./scripts/` for SupCon pretraining and 1-stage training examples.    
+For ImageNet experiments, change `--dataset` to `imagenet`, specify `--data_folder`, and set hyperparameters as denoted in the paper.
+
+### Parameters for Pretraining
 | Parameter                      | Description                                 |
 | ----------------------------- | ---------------------------------------- |
-| `model` | The model architecture. default = `resnet50`. |
+| `model` | The model architecture. Default: `resnet50`. |
 | `dataset`      | Dataset to use. Options:  `cifar10`, `cifar100`, `tinyimagenet`, `imagenet100`, `imagenet`. |
 | `method`      | Pretraining method. Options:  `Con`, `SupCon`, `SelfCon`. |
-| `lr` | Learning rate for the pretraining. default = `0.5` for the batch size of 1024. |
-| `temp` | Temperature of contrastive loss function. default = `0.07`. |
-| `precision` | Action argument to use 16 bit precision. default = `False`. |
-| `cosine` | Action argument to use cosine annealing scheduling. default = `False`. |
-| `selfcon_pos` | Position of where to attach the sub-network. default = `[False,True,False]` for ResNet architecture. |
-| `selfcon_arch` | Sub-network architecture. Options: `resnet`, `vgg`, `efficientnet`, `wrn`. default = `resnet`. |
-| `selfcon_size` | Block numbers of a sub-network. Options: `fc`, `small`, `same`. default = `same`. |
-| `multiview` | Action argument to use multi-viwed batch. default = `False`. |
-| `label` | Action argument to use label information in a contrastive loss. default = `False`. |
+| `lr` | Learning rate for the pretraining. Default: `0.5` for the batch size of 1024. |
+| `temp` | Temperature of contrastive loss function. Default: `0.07`. |
+| `precision` | Whether to use mixed precision. Default: `False`. |
+| `cosine` | Whether to use cosine annealing scheduling. Default: `False`. |
+| `selfcon_pos` | Position where to attach the sub-network. Default: `[False,True,False]` for ResNet architectures. |
+| `selfcon_arch` | Sub-network architecture. Options: `resnet`, `vgg`, `efficientnet`, `wrn`. Default: `resnet`. |
+| `selfcon_size` | Block numbers of a sub-network. Options: `fc`, `small`, `same`. Default: `same`. |
+| `multiview` | Whether to use multi-viwed batch. Default: `False`. |
+| `label` | Whether to use label information in a contrastive loss. Default: `False`. |
 
 
 ### Experimental Results
-See our paper for more details and extensive analyses.
+See our paper for more details and extensive analyses.    
+Here are some of our main results.
 
 <p align="center">
   <img src=https://user-images.githubusercontent.com/50742281/203949180-f1badce1-9361-422e-8f2c-e4df67ed3ce6.png width="800">
@@ -87,13 +103,9 @@ See our paper for more details and extensive analyses.
   <img src=https://user-images.githubusercontent.com/50742281/203949278-e8cc0571-5baf-4abe-bf98-bb9dda1b6707.png width="800">
 </p>
 
-## Reference
+## License
+Distributed under the MIT License.
 
-"""
-@article{bae2021self,
-  title={Self-Contrastive Learning},
-  author={Bae, Sangmin and Kim, Sungnyun and Ko, Jongwoo and Lee, Gihun and Noh, Seungjong and Yun, Se-Young},
-  journal={arXiv preprint arXiv:2106.15499},
-  year={2021}
-}
-"""
+## Contact
+* Sangmin Bae: bsmn0223@kaist.ac.kr
+* Sungnyun Kim: ksn4397@kaist.ac.kr
