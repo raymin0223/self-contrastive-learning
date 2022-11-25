@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# folder
+results/
+save/
+run/
+
+# model checkpoint
+*.pth
+output/
+log/

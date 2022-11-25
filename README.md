@@ -1,1 +1,1 @@
-# self-contrastive-learning-official
+# Self-Contrastive Learning
