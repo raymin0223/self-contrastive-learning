@@ -103,6 +103,18 @@ Here are some of our main results.
   <img src=https://user-images.githubusercontent.com/50742281/203949278-e8cc0571-5baf-4abe-bf98-bb9dda1b6707.png width="800">
 </p>
 
+## Citing This Work
+
+If you find this repo useful for your research, please consider citing our paper:
+```
+@article{bae2021self,
+  title={Self-Contrastive Learning},
+  author={Bae, Sangmin and Kim, Sungnyun and Ko, Jongwoo and Lee, Gihun and Noh, Seungjong and Yun, Se-Young},
+  journal={arXiv preprint arXiv:2106.15499},
+  year={2021}
+}
+```
+
 ## License
 Distributed under the MIT License.
 
