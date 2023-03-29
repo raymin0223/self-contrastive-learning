@@ -108,7 +108,7 @@ Here are some of our main results.
 If you find this repo useful for your research, please consider citing our paper:
 ```
 @article{bae2021self,
-  title={Self-Contrastive Learning},
+  title={Self-Contrastive Learning: Single-viewed Supervised Contrastive Framework using Sub-network},
   author={Bae, Sangmin and Kim, Sungnyun and Ko, Jongwoo and Lee, Gihun and Noh, Seungjong and Yun, Se-Young},
   journal={arXiv preprint arXiv:2106.15499},
   year={2021}
