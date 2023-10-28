@@ -9,7 +9,8 @@ This repository contains the official PyTorch implementation of the following pa
 > **Self-Contrastive Learning: Single-viewed Supervised Contrastive Framework using Sub-network** by
 > Sangmin Bae*, Sungnyun Kim*, Jongwoo Ko, Gihun Lee, Seungjong Noh, Se-Young Yun, [AAAI 2023](https://aaai.org/Conferences/AAAI-23/).
 > 
-> **Paper**: https://arxiv.org/abs/2106.15499
+> **Paper**: https://arxiv.org/abs/2106.15499    
+> **Video**: https://www.youtube.com/watch?v=VNv3LXzqX_4
 >
 > **Abstract:** *Contrastive loss has significantly improved performance in supervised classification tasks by using a multi-viewed framework that leverages augmentation and label information. The augmentation enables contrast with another view of a single image but enlarges training time and memory usage. To exploit the strength of multi-views while avoiding the high computation cost, we introduce a multi-exit architecture that outputs multiple features of a single image in a single-viewed framework. To this end, we propose Self-Contrastive (SelfCon) learning, which self-contrasts within multiple outputs from the different levels of a single network. The multi-exit architecture efficiently replaces multi-augmented images and leverages various information from different layers of a network. We demonstrate that SelfCon learning improves the classification performance of the encoder network, and empirically analyze its advantages in terms of the single-view and the sub-network. Furthermore, we provide theoretical evidence of the performance increase based on the mutual information bound. For ImageNet classification on ResNet-50, SelfCon improves accuracy by +0.6% with 59% memory and 48% time of Supervised Contrastive learning, and a simple ensemble of multi-exit outputs boosts performance up to +1.5%.*
 
